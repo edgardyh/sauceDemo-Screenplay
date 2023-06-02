@@ -1,0 +1,66 @@
+group 'co.com.tevolvers.reto'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.2.2")
+        classpath("net.serenity-bdd:serenity-single-page-report:2.2.2")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+
+sourceCompatibility = 1.8
+
+ext {
+    serenityVersion = '2.2.12'
+    serenityCucumberVersion = '2.2.2'
+    hamcrestVersion = '2.2'
+    automationDevcoVersion = '1.3.4'
+    apache = '2.0.19'
+    mySql = '8.0.20'
+}
+
+dependencies {
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'org.hamcrest', name: 'hamcrest-core', version: "${hamcrestVersion}"
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-screenplay-webdriver', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-core', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-cucumber5', version: "${serenityCucumberVersion}"
+    implementation group: 'co.com.devco.automation', name: 'automationDevcoLibrary', version: "${automationDevcoVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-screenplay', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-junit', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-ensure', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: "${serenityVersion}"
+    testImplementation('io.github.bonigarcia:webdrivermanager:5.3.2')
+}
+
+tasks.withType(Test) {
+    systemProperty "file.encoding", "UTF-8"
+    reports { "gradle reports" }
+    systemProperty "webdriver.chrome.driver", System.getProperty("webdriver.chrome.driver")
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+wrapper {
+    gradleVersion = '6.5'
+}
+
+//Un unico reporte en una pagina html
+serenity {
+    reports = ["single-page-html"]
+}
+// Cuando vamos a correr la regresion o conjunto de pruebas, con el fin de q si falla, continue
+gradle.startParameter.continueOnFailure = true
